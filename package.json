@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "audio-metadata": "~0.3.0"
+  }
+}
