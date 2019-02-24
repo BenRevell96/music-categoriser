@@ -1,22 +1,25 @@
-const os = require('os')
-const { createAudioFileList } = require('./helpers.js')
-const ffmetadata = require('ffmetadata')
+const {
+  createAudioFileList,
+  fileReader,
+  handleTags,
+  isSorted
+} = require('./helpers.js')
+const { folderPath } = require('./Constants.js')
+console.time('timer')
+// get list of audio filenames
+const files = createAudioFileList(folderPath)
 
-const folderPath = process.argv[2] || `${os.homedir()}/Music/`
+// loop over names and get file data
+for (i = 0; i < files.length; i++) {
+  // get the meta data of current file
+  const fileMetaDataObj = fileReader(files[i])
 
-const eligibleFiles = () => {
-  const files = createAudioFileList(folderPath)
-  for (i = 0; i < files.length; i++) {
-    const filePath = `${folderPath}/${files[i]}`.toString()
-
-    ffmetadata.read(filePath, (err, data) => {
-      console.log(`${folderPath}/${files[i]}`)
-
-      if (err) {
-        console.log('Error reading metadata', err)
-      } else console.log(data)
-    })
+  // check if labels are already added
+  const commentObject = isSorted(fileMetaDataObj)
+  if (commentObject && commentObject instanceof Array) {
+    return
   }
-}
 
-eligibleFiles()
+  return handleTags(files[i], fileMetaDataObj)
+}
+console.timeEnd('timer')
