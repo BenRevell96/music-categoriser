@@ -31,10 +31,12 @@ const checkTagPlaylistExists = playlist =>
   fs.existsSync(`${folderPath}/${playlist}`)
 
 const writeFileToTagPlaylist = (fileName, playlist) => {
-  console.log(`${folderPath}/${fileName}`)
   const fileAlias = alias.create(`${folderPath}/${fileName}`)
-  console.log('noice', alias.decode(fileAlias))
+  console.log(fileAlias)
 }
+
+const createPlaylist = playlistName =>
+  fs.mkdirSync(`${folderPath}/${playlistName}`)
 
 const handleTags = (fileName, { comment = '' }) => {
   const tags = comment.split(',') || []
@@ -50,6 +52,8 @@ const handleTags = (fileName, { comment = '' }) => {
       return writeFileToTagPlaylist(fileName)
     } else {
       // here we should ask to create folder as an improvement
+      createPlaylist(tags[i])
+      writeFileToTagPlaylist(fileName)
     }
   }
 }
